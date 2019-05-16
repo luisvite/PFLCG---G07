@@ -14,18 +14,22 @@
 CCamera objCamera;  //Creramos un objeto de tipo camara
 GLfloat g_lookupdown = 0.0f; 
 int font = (int)GLUT_BITMAP_HELVETICA_18;
-int rotacion = 0;
 
 // Variables usadas para calcular frames por segundo: (Windows)
 DWORD dwFrames = 0;
 DWORD dwCurrentTime = 0;
 DWORD dwLastUpdateTime = 0;
+DWORD dwLastUpdateTime2 = 0;
+DWORD dwLastUpdateTime3 = 0;
 DWORD dwElapsedTime = 0;
+DWORD dwElapsedTime2 = 0;
+DWORD dwElapsedTime3 = 0;
 
 //Variables usadas para crear el movimiento
-int tor = 0, tor2=2;
+int tor = 0, tor2=2, tor3=0;
 int anim = 0;
-
+int t = 0;
+GLfloat ejex = 0, ejey = 5.5, ejez=0;
 
 GLfloat Diffuse[] = { 0.5f, 0.5f, 0.5f, 1.0f };				// Diffuse Light Values
 GLfloat Specular[] = { 1.0, 1.0, 1.0, 1.0 };				// Specular Light Values
@@ -34,6 +38,7 @@ GLfloat Position2[] = { 0.0f, 0.0f, -5.0f, 1.0f };			// Light Position
 
 CTexture text1;
 CTexture text2;
+CTexture text3;
 
 CFiguras fig1;
 CFiguras tornado;
@@ -66,7 +71,11 @@ void InitGL(GLvoid) {
 	text2.BuildGLTexture();
 	text2.ReleaseImage();
 
-	objCamera.Position_Camera(0, 5.5f, 20, 0, 5.5f, 0, 0, 1, 0);
+	text3.LoadTGA("textura/tornado.tga");
+	text3.BuildGLTexture();
+	text3.ReleaseImage();
+
+	objCamera.Position_Camera(0, 5.5f, 50, 0, 5.5f, 0, 0, 1, 0);
 }
 
 void display(void) {
@@ -89,11 +98,10 @@ void display(void) {
 
 		glPushMatrix();
 			glRotatef(tor, 0.0, 1.0, 0.0);
-			glTranslatef(100, 0, 0);
+			glTranslatef(50, 0, 0);
+			glRotatef(tor3, 0.0, 1.0, 0.0);
 			glDisable(GL_LIGHTING);
-			glDisable(GL_TEXTURE_2D);
-			tornado.tornado(text1.GLindex,tor2);
-			glEnable(GL_TEXTURE_2D);
+			tornado.tornado(text3.GLindex,tor2);
 			glEnable(GL_LIGHTING);
 		glPopMatrix();
 	glPopMatrix();
@@ -107,18 +115,20 @@ void animacion()
 	//dwFrames++;
 	dwCurrentTime = GetTickCount(); // Even better to use timeGetTime()
 	dwElapsedTime = dwCurrentTime - dwLastUpdateTime;
+	dwElapsedTime2 = dwCurrentTime - dwLastUpdateTime2;
+	dwElapsedTime3 = dwCurrentTime - dwLastUpdateTime3;
 
 	if (anim == 1)
 	{
-		if (dwElapsedTime >= 60)
+		if (dwElapsedTime >= 80)
 		{
 			tor = (tor - 3) % 360;
 			dwLastUpdateTime = dwCurrentTime;
 		}
-		if (dwElapsedTime >= 150)
+		if (dwElapsedTime2 >= 20)
 		{
-			tor2 = (tor2 + 1) % 360;
-			dwLastUpdateTime = dwCurrentTime;
+			tor3 = (tor3 - 1) % 360;
+			dwLastUpdateTime2 = dwCurrentTime;
 		}
 	}
 	glutPostRedisplay();
@@ -181,10 +191,10 @@ void arrow_keys(int a_keys, int x, int y)  // Funcion para manejo de teclas espe
 {
 	switch (a_keys) {
 		case GLUT_KEY_PAGE_UP:
-			objCamera.UpDown_Camera(CAMERASPEED);
+			objCamera.UpDown_Camera(CAMERASPEED+ 0.3);
 			break;
 		case GLUT_KEY_PAGE_DOWN:
-			objCamera.UpDown_Camera(-CAMERASPEED);
+			objCamera.UpDown_Camera(-(CAMERASPEED + 0.3));
 			break;
 		case GLUT_KEY_UP:     // Presionamos tecla ARRIBA...
 			g_lookupdown -= 1.0f;

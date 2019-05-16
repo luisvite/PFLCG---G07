@@ -370,7 +370,7 @@ void CFiguras::esfera(GLfloat radio, int meridianos, int paralelos, GLuint text 
 	}
 }
 
-void CFiguras::torus(GLfloat radioM, GLfloat radiom, int meridianos, int paralelos )//toroide
+void CFiguras::torus(GLfloat radioM, GLfloat radiom, int meridianos, int paralelos, GLuint text)//toroide
 {
 
 	float R = 0;
@@ -381,10 +381,13 @@ void CFiguras::torus(GLfloat radioM, GLfloat radiom, int meridianos, int paralel
 	float v3[]={0.0, 0.0, 0.0};
 	float v4[]={0.0, 0.0, 0.0};
 
-	int i,j;
+	int i,j, resolucion=5;
 
 	GLdouble angulop = 2*3.1415/paralelos;
 	GLdouble angulom = 2*3.1415/meridianos;
+
+	float ctext_s = 1.0 / resolucion;
+	float ctext_t = 0.0;
 
 	r = (radioM - radiom)/2;
 	R = radiom + r;
@@ -417,12 +420,14 @@ void CFiguras::torus(GLfloat radioM, GLfloat radiom, int meridianos, int paralel
 			v4[1]=r*sin(angulop*j);
 
 			glNormal3f(v4[0], v4[1], v4[2]);
-			
+
+			glBindTexture(GL_TEXTURE_2D, text);
+
 			glBegin(GL_POLYGON);
-				glVertex3fv(v1);
-				glVertex3fv(v2);
-				glVertex3fv(v3);
-				glVertex3fv(v4);
+				glTexCoord2f(ctext_s*i,0);	glVertex3fv(v1);
+				glTexCoord2f(ctext_s*(i + 1), 0.0f);	glVertex3fv(v2);
+				glTexCoord2f(ctext_s*(i + 1), 1.0f);	glVertex3fv(v3);
+				glTexCoord2f(ctext_s*i, 1.0f);		glVertex3fv(v4);
 			glEnd();
 		}
 	}
@@ -534,11 +539,11 @@ void CFiguras::tornado(GLuint text, int rotacion)
 {
 	float k = 0;
 	CFiguras f1;
-	for (int i = 0; i <= 130; i++) {
+	for (int i = 0; i <= 200; i++) {
 		glRotatef(rotacion, 0,1,0);
 		glPushMatrix();
 			glTranslatef(0, 0.2*(i + 1), 0);
-			f1.torus(2.2+k,2.0+k,10,10);
+			f1.torus(2.2+k,2.0+k,10,10,text);
 		glPopMatrix();
 		k = k + 0.2;
 	}
