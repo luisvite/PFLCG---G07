@@ -63,9 +63,9 @@ void CFiguras::skybox(float largo, float altura, float profundidad, GLuint text,
 		glBindTexture(GL_TEXTURE_2D, text1);
 		glBegin(GL_POLYGON);  //Bottom
 			glNormal3f( 0.0f,1.0f, 0.0f);
-			glTexCoord2f(4.0f, 0.0f); glVertex3fv(vertice[0]);
-			glTexCoord2f(4.0f, 4.0f); glVertex3fv(vertice[1]);
-			glTexCoord2f(0.0f, 4.0f); glVertex3fv(vertice[2]);
+			glTexCoord2f(30.0f, 0.0f); glVertex3fv(vertice[0]);
+			glTexCoord2f(30.0f, 30.0f); glVertex3fv(vertice[1]);
+			glTexCoord2f(0.0f, 30.0f); glVertex3fv(vertice[2]);
 			glTexCoord2f(0.0f, 0.0f); glVertex3fv(vertice[3]);
 		glEnd();
 }
@@ -119,11 +119,8 @@ void CFiguras::skybox2 (float altura, float largo, float profundidad, GLuint tex
 		glEnd();
 }
 
-
-
 void CFiguras::prisma (float altura, float largo, float profundidad, GLuint text)  //Funcion creacion prisma
 {
-
 	GLfloat vertice [8][3] = {
 				{0.5*largo ,-0.5*altura, 0.5*profundidad},    //Coordenadas V�rtice 1 V1
 				{-0.5*largo ,-0.5*altura , 0.5*profundidad},    //Coordenadas V�rtice 2 V2
@@ -189,7 +186,6 @@ void CFiguras::prisma (float altura, float largo, float profundidad, GLuint text
 
 void CFiguras::prisma2 (GLuint text, GLuint text2)  //Funcion creacion prisma
 {
-
 	GLfloat vertice [8][3] = {
 				{0.5 ,-0.5, 0.5},    //Coordenadas V�rtice 0 V0
 				{-0.5 ,-0.5, 0.5},    //Coordenadas V�rtice 1 V1
@@ -318,7 +314,6 @@ void CFiguras::prisma_anun (GLuint text, GLuint text2)  //Funcion creacion prism
 			glTexCoord2f(text_izq, 0.0f); glVertex3fv(vertice[7]);
 		glEnd();
 }
-
 
 void CFiguras::esfera(GLfloat radio, int meridianos, int paralelos, GLuint text )
 {
@@ -534,3 +529,17 @@ void CFiguras::cilindro(float radio, float altura, int resolucion, GLuint text)
 		glEnd();
 	}
 }	
+
+void CFiguras::tornado(GLuint text, int rotacion)
+{
+	float k = 0;
+	CFiguras f1;
+	for (int i = 0; i <= 130; i++) {
+		glRotatef(rotacion, 0,1,0);
+		glPushMatrix();
+			glTranslatef(0, 0.2*(i + 1), 0);
+			f1.torus(2.2+k,2.0+k,10,10);
+		glPopMatrix();
+		k = k + 0.2;
+	}
+}

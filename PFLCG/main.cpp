@@ -14,6 +14,18 @@
 CCamera objCamera;  //Creramos un objeto de tipo camara
 GLfloat g_lookupdown = 0.0f; 
 int font = (int)GLUT_BITMAP_HELVETICA_18;
+int rotacion = 0;
+
+// Variables usadas para calcular frames por segundo: (Windows)
+DWORD dwFrames = 0;
+DWORD dwCurrentTime = 0;
+DWORD dwLastUpdateTime = 0;
+DWORD dwElapsedTime = 0;
+
+//Variables usadas para crear el movimiento
+int tor = 0, tor2=2;
+int anim = 0;
+
 
 GLfloat Diffuse[] = { 0.5f, 0.5f, 0.5f, 1.0f };				// Diffuse Light Values
 GLfloat Specular[] = { 1.0, 1.0, 1.0, 1.0 };				// Specular Light Values
@@ -24,6 +36,7 @@ CTexture text1;
 CTexture text2;
 
 CFiguras fig1;
+CFiguras tornado;
 
 void InitGL(GLvoid) {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);				// Negro de fondo	
@@ -53,7 +66,7 @@ void InitGL(GLvoid) {
 	text2.BuildGLTexture();
 	text2.ReleaseImage();
 
-	objCamera.Position_Camera(0, 2.5f, 3, 0, 2.5f, 0, 0, 1, 0);
+	objCamera.Position_Camera(0, 5.5f, 20, 0, 5.5f, 0, 0, 1, 0);
 }
 
 void display(void) {
@@ -69,13 +82,46 @@ void display(void) {
 
 		glPushMatrix(); //Creamos cielo y suelo
 			glDisable(GL_LIGHTING);
-			glTranslatef(0, 60, 0);
-			fig1.skybox(130.0, 130.0, 130.0, text1.GLindex, text2.GLindex);
+			glTranslatef(0, 65, 0);
+			fig1.skybox(500.0, 130.0, 500.0, text1.GLindex, text2.GLindex);
+			glEnable(GL_LIGHTING);
+		glPopMatrix();
+
+		glPushMatrix();
+			glRotatef(tor, 0.0, 1.0, 0.0);
+			glTranslatef(100, 0, 0);
+			glDisable(GL_LIGHTING);
+			glDisable(GL_TEXTURE_2D);
+			tornado.tornado(text1.GLindex,tor2);
+			glEnable(GL_TEXTURE_2D);
 			glEnable(GL_LIGHTING);
 		glPopMatrix();
 	glPopMatrix();
 
 	glutSwapBuffers();
+}
+
+void animacion()
+{
+	// Calculate the number of frames per one second:
+	//dwFrames++;
+	dwCurrentTime = GetTickCount(); // Even better to use timeGetTime()
+	dwElapsedTime = dwCurrentTime - dwLastUpdateTime;
+
+	if (anim == 1)
+	{
+		if (dwElapsedTime >= 60)
+		{
+			tor = (tor - 3) % 360;
+			dwLastUpdateTime = dwCurrentTime;
+		}
+		if (dwElapsedTime >= 150)
+		{
+			tor2 = (tor2 + 1) % 360;
+			dwLastUpdateTime = dwCurrentTime;
+		}
+	}
+	glutPostRedisplay();
 }
 
 void reshape(int width, int height)   // Creamos funcion Reshape
@@ -89,7 +135,7 @@ void reshape(int width, int height)   // Creamos funcion Reshape
 	glLoadIdentity();
 
 	// Tipo de Vista
-	glFrustum(-0.1, 0.1, -0.1, 0.1, 0.1, 170.0);
+	glFrustum(-0.1, 0.1, -0.1, 0.1, 0.1, 1000.0);
 	glMatrixMode(GL_MODELVIEW);							// Seleccionamos Modelview Matrix
 	glLoadIdentity();
 }
@@ -97,6 +143,15 @@ void reshape(int width, int height)   // Creamos funcion Reshape
 void keyboard(unsigned char key, int x, int y)  // Create Keyboard Function
 {
 	switch (key) {
+		case 'q':
+			if (anim == 0)
+			{
+				anim = 1;
+			}
+			else {
+				anim = 0;
+			}
+			break;
 		case 'w':   //Movimientos de camara
 		case 'W':
 			objCamera.Move_Camera(CAMERASPEED + 0.2);
@@ -163,6 +218,7 @@ int main(int argc, char** argv)   // Main Function
 	glutReshapeFunc(reshape);	//Indicamos a Glut funci�n en caso de cambio de tamano
 	glutKeyboardFunc(keyboard);	//Indicamos a Glut funci�n de manejo de teclado
 	glutSpecialFunc(arrow_keys);	//Otras
+	glutIdleFunc(animacion);
 
 	glutMainLoop();          // 
 
